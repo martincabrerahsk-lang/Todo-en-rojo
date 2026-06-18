@@ -1,1 +1,239 @@
+/* Variables dinámicas (controladas por JS para el efecto scroll) */
+:root {
+    --bg-darkness: 30; /* 30 es azul marino oscuro, bajará hacia negro */
+    --neon-intensity: 1; /* 1 es full brillo, 0 es apagado */
+    --text-color: #ffffff;
+}
 
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: hsl(230, 80%, calc(var(--bg-darkness) * 1%));
+    color: var(--text-color);
+    font-family: 'Fredoka', sans-serif;
+    line-height: 1.6;
+    transition: background-color 0.2s ease;
+}
+
+/* Efecto Pantalla de Tubo (CRT) */
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Títulos y Neón */
+.neon-title {
+    font-family: 'VT323', monospace;
+    font-size: 4.5rem;
+    color: #fff;
+    text-shadow: 
+        0 0 calc(5px * var(--neon-intensity)) #fff,
+        0 0 calc(10px * var(--neon-intensity)) #fff,
+        0 0 calc(20px * var(--neon-intensity)) #ff00de,
+        0 0 calc(40px * var(--neon-intensity)) #ff00de;
+    margin-bottom: 0;
+    line-height: 1;
+}
+
+.neon-subtitle {
+    font-family: 'VT323', monospace;
+    font-size: 2rem;
+    color: #0ff;
+    text-shadow: 0 0 calc(10px * var(--neon-intensity)) #0ff;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-family: 'VT323', monospace;
+    font-size: 2.5rem;
+    color: #ffcc00;
+    margin-bottom: 15px;
+}
+
+/* ====== SLOT MACHINE ====== */
+.slot-machine {
+    background: #111;
+    border: 8px solid #444;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 
+        inset 0 0 20px #000,
+        0 0 calc(30px * var(--neon-intensity)) rgba(255, 0, 222, 0.4);
+    margin: 30px auto;
+    max-width: 600px;
+    position: relative;
+}
+
+.slot-display {
+    background: #000;
+    border: 4px inset #333;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: right;
+    font-family: 'VT323', monospace;
+    color: #0f0;
+    text-shadow: 0 0 calc(5px * var(--neon-intensity)) #0f0;
+    font-size: 2rem;
+}
+
+.reels-container {
+    display: flex;
+    justify-content: space-between;
+    background: #ddd;
+    padding: 10px;
+    border: 5px inset #666;
+    height: 120px;
+    overflow: hidden;
+}
+
+.reel {
+    width: 18%;
+    background: #fff;
+    border: 1px solid #999;
+    font-size: 3rem;
+    text-align: center;
+    position: relative;
+    /* Sombras internas para dar curva de rodillo */
+    box-shadow: inset 0 15px 10px -10px rgba(0,0,0,0.5), inset 0 -15px 10px -10px rgba(0,0,0,0.5);
+}
+
+.reel-content {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    transition: transform 2s cubic-bezier(0.15, 0.85, 0.25, 1);
+}
+
+.win-display {
+    margin-top: 15px;
+    background: #220000;
+    color: #ff3333;
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    padding: 5px;
+    border: 2px solid #550000;
+}
+
+.btn-start, .btn-spin {
+    background: linear-gradient(to bottom, #ff0055, #aa0033);
+    color: white;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    border: 4px solid #ff99bb;
+    border-radius: 10px;
+    margin-top: 20px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #550011;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-start:active, .btn-spin:active {
+    transform: translateY(5px);
+    box-shadow: 0 0 0 #550011;
+}
+
+.btn-start:disabled, .btn-spin:disabled {
+    background: #555;
+    border-color: #777;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: translateY(5px);
+}
+
+/* ====== RULETA Y ELEMENTOS EXTRA ====== */
+.roulette-wrapper {
+    position: relative;
+    width: 300px;
+    margin: 0 auto;
+}
+
+#roulette-canvas {
+    border-radius: 50%;
+    border: 5px solid #ffcc00;
+    box-shadow: 0 0 calc(20px * var(--neon-intensity)) #ffcc00;
+    transition: transform 4s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.roulette-pointer {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    color: red;
+    text-shadow: 0 0 5px black;
+}
+
+.stat-box {
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #ff00de;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.stat-number {
+    font-family: 'VT323', monospace;
+    font-size: 3rem;
+    color: #ff00de;
+}
+
+.data-cards {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.data-card {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    padding: 15px;
+    width: 45%;
+    border-radius: 8px;
+}
+
+.data-title { color: #ffcc00; font-weight: bold; margin-bottom: 10px; }
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: #ff0000;
+    border: 10px solid #550000;
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 0 0 50px red;
+}
+
+.modal-title { font-family: 'VT323', monospace; font-size: 4rem; color: white; margin-bottom: 20px; }
+.modal-text { color: white; font-size: 1.5rem; margin-bottom: 20px; }
+.data-fact { background: black; color: white; padding: 15px; font-family: 'VT323', monospace; font-size: 1.5rem; }
